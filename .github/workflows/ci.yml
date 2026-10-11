@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      kafka:
+        image: apache/kafka:3.7.2
+        ports:
+          - 9092:9092
+        env:
+          KAFKA_NODE_ID: 1
+          KAFKA_PROCESS_ROLES: broker,controller
+          KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
+          KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+          KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+          KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+          KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+          KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+          KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: secdet
+          POSTGRES_PASSWORD: secdet
+          POSTGRES_DB: security_anomaly_detection
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U secdet"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgresql://secdet:secdet@localhost:5432/security_anomaly_detection
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run unit tests
+        run: python -m pytest tests/ -v
+
+      - name: Wait for Kafka to accept connections
+        run: |
+          for i in $(seq 1 20); do
+            (echo > /dev/tcp/localhost/9092) >/dev/null 2>&1 && break
+            sleep 3
+          done
+
+      - name: Run Kafka integration test
+        run: python -m pytest tests/test_integration_kafka.py -v

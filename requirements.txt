@@ -1,0 +1,13 @@
+pandas
+numpy
+scikit-learn
+scipy
+torch
+fastapi
+uvicorn[standard]
+sqlalchemy
+psycopg2-binary
+kafka-python
+pytest
+python-dotenv
+httpx

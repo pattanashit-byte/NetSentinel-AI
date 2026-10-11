@@ -1,0 +1,49 @@
+venv/
+tools/
+data/*.csv
+*.pyc
+__pycache__/
+.pytest_cache/
+*.db
+eval/results.json
+eval/drift_results.json
+eval_run_log.txt
+diagnose_log.txt
+drift_run_log.txt
+.env
+
+
+# Python virtual environments
+venv/
+.venv/
+tools/
+
+# Datasets
+data/*.csv
+
+# Python cache
+*.pyc
+__pycache__/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Databases
+*.db
+
+# Generated evaluation results
+eval/results.json
+eval/drift_results.json
+eval_run_log.txt
+diagnose_log.txt
+drift_run_log.txt
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# macOS
+.DS_Store
