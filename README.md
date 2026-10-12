@@ -1,4 +1,5 @@
-# NetSentinal AI - Network Monitoring & Anomaly Detection using Machine Learning and DevOps
+# NetSentinal AI 
+Network Monitoring & Anomaly Detection using Machine Learning and DevOps
 
 ![CI](https://github.com/saijignas/security-anomaly-detection/actions/workflows/ci.yml/badge.svg)
 
